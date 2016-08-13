@@ -1,11 +1,12 @@
 package gate
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/OLDrivers/leaf/chanrpc"
 	"github.com/OLDrivers/leaf/log"
 	"github.com/OLDrivers/leaf/network"
-	"reflect"
-	"time"
 )
 
 type Gate struct {
@@ -111,7 +112,7 @@ func (a *agent) OnClose() {
 	if a.gate.AgentChanRPC != nil {
 		err := a.gate.AgentChanRPC.Call0("CloseAgent", a)
 		if err != nil {
-			log.Error("chanrpc error: %v", err)
+			log.Err("chanrpc error: %v", err)
 		}
 	}
 }
@@ -120,12 +121,12 @@ func (a *agent) WriteMsg(msg interface{}) {
 	if a.gate.Processor != nil {
 		data, err := a.gate.Processor.Marshal(msg)
 		if err != nil {
-			log.Error("marshal message %v error: %v", reflect.TypeOf(msg), err)
+			log.Err("marshal message %v error: %v", reflect.TypeOf(msg), err)
 			return
 		}
 		err = a.conn.WriteMsg(data...)
 		if err != nil {
-			log.Error("write message %v error: %v", reflect.TypeOf(msg), err)
+			log.Err("write message %v error: %v", reflect.TypeOf(msg), err)
 		}
 	}
 }

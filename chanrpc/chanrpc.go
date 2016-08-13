@@ -3,9 +3,10 @@ package chanrpc
 import (
 	"errors"
 	"fmt"
+	"runtime"
+
 	"github.com/OLDrivers/leaf/conf"
 	"github.com/OLDrivers/leaf/log"
-	"runtime"
 )
 
 // one server per goroutine (goroutine not safe)
@@ -130,7 +131,7 @@ func (s *Server) exec(ci *CallInfo) (err error) {
 func (s *Server) Exec(ci *CallInfo) {
 	err := s.exec(ci)
 	if err != nil {
-		log.Error("%v", err)
+		log.Err("%v", err)
 	}
 }
 
@@ -353,9 +354,9 @@ func execCb(ri *RetInfo) {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
-				log.Error("%v: %s", r, buf[:l])
+				log.Err("%v: %s", r, buf[:l])
 			} else {
-				log.Error("%v", r)
+				log.Err("%v", r)
 			}
 		}
 	}()

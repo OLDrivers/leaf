@@ -1,10 +1,11 @@
 package network
 
 import (
-	"github.com/OLDrivers/leaf/log"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/OLDrivers/leaf/log"
 )
 
 type TCPServer struct {
@@ -34,19 +35,19 @@ func (server *TCPServer) Start() {
 func (server *TCPServer) init() {
 	ln, err := net.Listen("tcp", server.Addr)
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Panic("%v", err)
 	}
 
 	if server.MaxConnNum <= 0 {
 		server.MaxConnNum = 100
-		log.Release("invalid MaxConnNum, reset to %v", server.MaxConnNum)
+		log.Info("invalid MaxConnNum, reset to %v", server.MaxConnNum)
 	}
 	if server.PendingWriteNum <= 0 {
 		server.PendingWriteNum = 100
-		log.Release("invalid PendingWriteNum, reset to %v", server.PendingWriteNum)
+		log.Info("invalid PendingWriteNum, reset to %v", server.PendingWriteNum)
 	}
 	if server.NewAgent == nil {
-		log.Fatal("NewAgent must not be nil")
+		log.Panic("NewAgent must not be nil")
 	}
 
 	server.ln = ln
@@ -76,7 +77,7 @@ func (server *TCPServer) run() {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				log.Release("accept error: %v; retrying in %v", err, tempDelay)
+				log.Info("accept error: %v; retrying in %v", err, tempDelay)
 				time.Sleep(tempDelay)
 				continue
 			}

@@ -2,10 +2,11 @@ package g
 
 import (
 	"container/list"
-	"github.com/OLDrivers/leaf/conf"
-	"github.com/OLDrivers/leaf/log"
 	"runtime"
 	"sync"
+
+	"github.com/OLDrivers/leaf/conf"
+	"github.com/OLDrivers/leaf/log"
 )
 
 // one Go per goroutine (goroutine not safe)
@@ -42,9 +43,9 @@ func (g *Go) Go(f func(), cb func()) {
 				if conf.LenStackBuf > 0 {
 					buf := make([]byte, conf.LenStackBuf)
 					l := runtime.Stack(buf, false)
-					log.Error("%v: %s", r, buf[:l])
+					log.Err("%v: %s", r, buf[:l])
 				} else {
-					log.Error("%v", r)
+					log.Err("%v", r)
 				}
 			}
 		}()
@@ -60,9 +61,9 @@ func (g *Go) Cb(cb func()) {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
-				log.Error("%v: %s", r, buf[:l])
+				log.Err("%v: %s", r, buf[:l])
 			} else {
-				log.Error("%v", r)
+				log.Err("%v", r)
 			}
 		}
 	}()
@@ -110,9 +111,9 @@ func (c *LinearContext) Go(f func(), cb func()) {
 				if conf.LenStackBuf > 0 {
 					buf := make([]byte, conf.LenStackBuf)
 					l := runtime.Stack(buf, false)
-					log.Error("%v: %s", r, buf[:l])
+					log.Err("%v: %s", r, buf[:l])
 				} else {
-					log.Error("%v", r)
+					log.Err("%v", r)
 				}
 			}
 		}()

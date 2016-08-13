@@ -1,10 +1,11 @@
 package module
 
 import (
-	"github.com/OLDrivers/leaf/conf"
-	"github.com/OLDrivers/leaf/log"
 	"runtime"
 	"sync"
+
+	"github.com/OLDrivers/leaf/conf"
+	"github.com/OLDrivers/leaf/log"
 )
 
 type Module interface {
@@ -61,9 +62,9 @@ func destroy(m *module) {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
-				log.Error("%v: %s", r, buf[:l])
+				log.Err("%v: %s", r, buf[:l])
 			} else {
-				log.Error("%v", r)
+				log.Err("%v", r)
 			}
 		}
 	}()
