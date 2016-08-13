@@ -100,7 +100,7 @@ go install server
 package msg
 
 import (
-	"github.com/name5566/leaf/network"
+	"github.com/OLDrivers/leaf/network"
 )
 
 var Processor network.Processor
@@ -116,7 +116,7 @@ Processor 为消息的处理器（可由用户自定义），这里我们使用 
 package msg
 
 import (
-	"github.com/name5566/leaf/network/json"
+	"github.com/OLDrivers/leaf/network/json"
 )
 
 // 使用默认的 JSON 消息处理器（默认还提供了 protobuf 消息处理器）
@@ -157,8 +157,8 @@ func init() {
 package internal
 
 import (
-	"github.com/name5566/leaf/log"
-	"github.com/name5566/leaf/gate"
+	"github.com/OLDrivers/leaf/log"
+	"github.com/OLDrivers/leaf/gate"
 	"reflect"
 	"server/msg"
 )
@@ -319,7 +319,7 @@ var (
 package internal
 
 import (
-	"github.com/name5566/leaf/module"
+	"github.com/OLDrivers/leaf/module"
 	"server/base"
 )
 
@@ -355,7 +355,7 @@ func (m *Module) OnDestroy() {
 package internal
 
 import (
-	"github.com/name5566/leaf/gate"
+	"github.com/OLDrivers/leaf/gate"
 )
 
 func init() {
