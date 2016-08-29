@@ -5,6 +5,8 @@ import (
 	"errors"
 	"io"
 	"math"
+
+	"github.com/OLDrivers/leaf/log"
 )
 
 // --------------
@@ -70,6 +72,7 @@ func (p *MsgParser) Read(conn *TCPConn) ([]byte, error) {
 	if _, err := io.ReadFull(conn, bufMsgLen); err != nil {
 		return nil, err
 	}
+	log.Debug("Receiving data from: %v", conn.RemoteAddr())
 
 	// parse len
 	var msgLen uint32
