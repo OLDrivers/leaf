@@ -92,6 +92,7 @@ func (a *agent) Run() {
 			log.Debug("read message: %v", err)
 			break
 		}
+		log.Debug("Receiving data from: %v", a.conn.RemoteAddr())
 
 		if a.gate.Processor != nil {
 			msg, err := a.gate.Processor.Unmarshal(data)
