@@ -14,12 +14,18 @@ type Processor struct {
 }
 
 type MsgInfo struct {
-	msgType    reflect.Type
-	msgRouter  *chanrpc.Server
-	msgHandler MsgHandler
+	msgType       reflect.Type
+	msgRouter     *chanrpc.Server
+	msgHandler    MsgHandler
+	msgRawHandler MsgHandler
 }
 
 type MsgHandler func([]interface{})
+
+type MsgRaw struct {
+	msgID      string
+	msgRawData json.RawMessage
+}
 
 func NewProcessor() *Processor {
 	p := new(Processor)
@@ -76,8 +82,36 @@ func (p *Processor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 	i.msgHandler = msgHandler
 }
 
+// It's dangerous to call the method on routing or marshaling (unmarshaling)
+func (p *Processor) SetRawHandler(msg interface{}, msgRawHandler MsgHandler) {
+	msgType := reflect.TypeOf(msg)
+	if msgType == nil || msgType.Kind() != reflect.Ptr {
+		log.Fatal("json message pointer required")
+	}
+	msgID := msgType.Elem().Name()
+	i, ok := p.msgInfo[msgID]
+	if !ok {
+		log.Fatal("message %v not registered", msgID)
+	}
+
+	i.msgRawHandler = msgRawHandler
+}
+
 // goroutine safe
 func (p *Processor) Route(msg interface{}, userData interface{}) error {
+	// raw
+	if msgRaw, ok := msg.(MsgRaw); ok {
+		i, ok := p.msgInfo[msgRaw.msgID]
+		if !ok {
+			return fmt.Errorf("message %v not registered", msgRaw.msgID)
+		}
+		if i.msgRawHandler != nil {
+			i.msgRawHandler([]interface{}{msgRaw.msgID, msgRaw.msgRawData, userData})
+		}
+		return nil
+	}
+
+	// json
 	msgType := reflect.TypeOf(msg)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
 		return errors.New("json message pointer required")
@@ -87,7 +121,6 @@ func (p *Processor) Route(msg interface{}, userData interface{}) error {
 	if !ok {
 		return fmt.Errorf("message %v not registered", msgID)
 	}
-
 	if i.msgHandler != nil {
 		i.msgHandler([]interface{}{msg, userData})
 	}
@@ -115,8 +148,12 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, error) {
 		}
 
 		// msg
-		msg := reflect.New(i.msgType.Elem()).Interface()
-		return msg, json.Unmarshal(data, msg)
+		if i.msgRawHandler != nil {
+			return MsgRaw{msgID, data}, nil
+		} else {
+			msg := reflect.New(i.msgType.Elem()).Interface()
+			return msg, json.Unmarshal(data, msg)
+		}
 	}
 
 	panic("bug")
