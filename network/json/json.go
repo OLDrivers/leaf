@@ -34,7 +34,7 @@ func NewProcessor() *Processor {
 }
 
 // It's dangerous to call the method on routing or marshaling (unmarshaling)
-func (p *Processor) Register(msg interface{}) {
+func (p *Processor) Register(msg interface{}) string {
 	msgType := reflect.TypeOf(msg)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
 		log.Fatal("json message pointer required")
@@ -50,6 +50,7 @@ func (p *Processor) Register(msg interface{}) {
 	i := new(MsgInfo)
 	i.msgType = msgType
 	p.msgInfo[msgID] = i
+	return msgID
 }
 
 // It's dangerous to call the method on routing or marshaling (unmarshaling)
@@ -83,12 +84,7 @@ func (p *Processor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 }
 
 // It's dangerous to call the method on routing or marshaling (unmarshaling)
-func (p *Processor) SetRawHandler(msg interface{}, msgRawHandler MsgHandler) {
-	msgType := reflect.TypeOf(msg)
-	if msgType == nil || msgType.Kind() != reflect.Ptr {
-		log.Fatal("json message pointer required")
-	}
-	msgID := msgType.Elem().Name()
+func (p *Processor) SetRawHandler(msgID string, msgRawHandler MsgHandler) {
 	i, ok := p.msgInfo[msgID]
 	if !ok {
 		log.Fatal("message %v not registered", msgID)
